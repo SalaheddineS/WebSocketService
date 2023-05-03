@@ -1,26 +1,35 @@
 package com.WebSocketService.Handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.HashMap;
+
+import java.util.Map;
 
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
-    private final List<WebSocketSession> sessions=new ArrayList<>();
+    private final Map<String,WebSocketSession> sessions=new HashMap();
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.add(session);
+        String email = session.getUri().toString().split("email=")[1];
+        sessions.put(email,session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        for(WebSocketSession webSocketSession:sessions){
-            webSocketSession.sendMessage(message);
-        }
+        ObjectMapper objectMapper=new ObjectMapper();
+        Map<String,String> messageMap=objectMapper.readValue(message.getPayload(),Map.class);
+        String email=messageMap.get("email");
+        String messagex=messageMap.get("message");
+        String target=messageMap.get("target");
+       System.out.println(messagex);
+
     }
 
     @Override
