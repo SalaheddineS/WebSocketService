@@ -28,8 +28,15 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         String email=messageMap.get("email");
         String messagex=messageMap.get("message");
         String target=messageMap.get("target");
-       System.out.println(messagex);
+        System.out.println(sessions.get(email));
 
+        Map<String, String> data = new HashMap<>();
+        data.put("email", email);
+        data.put("message", messagex);
+
+        // convert the JSON object to a string and send it to the client-side
+        String jsonData = objectMapper.writeValueAsString(data);
+        sessions.get(email).sendMessage(new TextMessage(jsonData));
     }
 
     @Override
